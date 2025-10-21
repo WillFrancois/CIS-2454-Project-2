@@ -1,0 +1,7 @@
+Get endpoint with filtering: 5/5. Use the key name for the recipe to filter. If your recipe object looks like {"burger": {"ingredients": ["bread", "burger meat", "lettuce", "onion"]}}, the recipe can be accessed by going to localhost:8080/burger. Leaving the directory empty will return all recipes.&nbsp;
+
+post update for creating: 5/5. By sending the raw string {"burger": {"ingredients": ["bread", "burger meat", "lettuce", "onion"]}} as a post request, the key and values will be parsed by the server and added to a recipes file whether it previously exists or not. Here is an example CuRL command: curl -X POST -d '{"burger": {"ingredients": ["burger"]}}' -H "Content-Type: application/json" http://localhost:8080
+
+put endpoint for updates: 5/5. By sending the raw string {"burger": {"ingredients": ["bread", "burger meat", "lettuce", "onion"]}} as a put request, if there is already an object in the json file with the key burger, it will overwrite the values that exist in the file with the json string. Here is an example CuRL command: curl -X PUT -d '{"burger": {"ingredients": ["burger", "Tomato"]}}' -H "Content-Type: application/json" http://localhost:8080
+
+delete endpoint for deleting: 5/5. By sending the raw string "burger", if there is an object in the json file with the key "burger", it will be removed from the file. Here is an example CuRL command: curl -X DELETE -d 'burger' http://localhost:8080
