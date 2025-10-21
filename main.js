@@ -52,6 +52,8 @@ async function addRecipe(req, res) {
       for (let i in cparsed) {
         if (parsed[i] == undefined) {
           parsed[i] = cparsed[i];
+          // This break only allows one recipe to be added.
+          break;
         } else {
           res.write("Key already exists in database!");
           res.end();
@@ -96,6 +98,8 @@ async function updateRecipe(req, res) {
       for (let i in cparsed) {
         if (parsed[i] != undefined) {
           parsed[i] = cparsed[i];
+          // This break only allows one recipe to be updated.
+          break;
         } else {
           res.write("Key does not exist in database!");
           res.end();
@@ -117,7 +121,45 @@ async function updateRecipe(req, res) {
 }
 
 async function deleteRecipe(req, res) {
-  return 0;
+  let content = [];
+
+  req.on("data", (chunk) => {
+    content.push(chunk);
+  });
+
+  req.on("end", () => {
+    content = Buffer.concat(content).toString();
+    console.log(content);
+  });
+
+  fs.readFile("./recipes.json", "utf8", (err, data) => {
+    if (err) {
+      res.write("Error has occured opening recipes file.");
+    }
+
+    try {
+      let parsed = JSON.parse(data);
+
+      if (parsed[content] != undefined) {
+        delete parsed[content];
+        // This break only allows one recipe to be updated.
+      } else {
+        res.write("Key does not exist in database!");
+        res.end();
+      }
+
+      console.log(parsed);
+
+      fs.writeFile("recipes.json", JSON.stringify(parsed), (err) => {
+        if (err) console.log(err);
+        res.write("Saved successfully!");
+        res.end();
+      });
+    } catch (err) {
+      res.write("Error parsing input");
+      res.end();
+    }
+  });
 }
 
 const server = http.createServer(function (request, response) {
