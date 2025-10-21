@@ -42,7 +42,7 @@ async function addRecipe(req, res) {
 
   fs.readFile("./recipes.json", "utf8", (err, data) => {
     if (err) {
-      res.write("Error has occured opening recipes file.");
+      res.write("Unable to open the recipes file.\n");
     }
 
     try {
