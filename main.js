@@ -1,30 +1,64 @@
+const fs = require("fs");
 const http = require("http");
 
-async function getRecipes(res) {
-  res.write("Testing");
-  res.end();
+async function getRecipes(req, res) {
+  fs.readFile("./recipes.json", "utf8", (err, data) => {
+    if (err) {
+      res.write("Error has occured opening recipes file.");
+    }
+
+    try {
+      let parsed = JSON.parse(data);
+      res.writeHead(200, {
+        "Content-Type": "application/json",
+      });
+      if (req.url.substring(1, req.url.length).length > 0) {
+        res.end(
+          JSON.stringify(
+            parsed[decodeURIComponent(req.url.substring(1, req.url.length))],
+          ),
+        );
+      } else {
+        res.end(data);
+      }
+    } catch (err) {
+      res.write("Unable to read recipe data.");
+      res.end();
+    }
+  });
 }
 
-async function updateRecipe() {
+async function addRecipe(req, res) {
+  // let content = [];
+  //
+  // req.on("data", (chunk) => {
+  //   content.push(chunk);
+  // });
+  //
+  // req.on("end", () => {
+  //   content = Buffer.concat(content).toString();
+  // });
+
   return 0;
 }
 
-async function addRecipe() {
+async function updateRecipe(req, res) {
   return 0;
 }
 
-async function deleteRecipe() {
+async function deleteRecipe(req, res) {
   return 0;
 }
 
 const server = http.createServer(function (request, response) {
-  let desUrl = request.url;
-  switch (desUrl) {
-    case "/":
-      getRecipes(response);
-      break;
-    default:
-      console.log(desUrl);
+  if (request.method == "GET") {
+    getRecipes(request, response);
+  } else if (request.method == "POST") {
+    addRecipe(request, response);
+  } else if (request.method == "PUT") {
+    updateRecipe(request, response);
+  } else if (request.method == "DELETE") {
+    deleteRecipe(request, response);
   }
 });
 
