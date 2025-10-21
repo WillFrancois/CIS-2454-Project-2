@@ -29,15 +29,42 @@ async function getRecipes(req, res) {
 }
 
 async function addRecipe(req, res) {
-  // let content = [];
-  //
-  // req.on("data", (chunk) => {
-  //   content.push(chunk);
-  // });
-  //
-  // req.on("end", () => {
-  //   content = Buffer.concat(content).toString();
-  // });
+  let content = [];
+
+  req.on("data", (chunk) => {
+    content.push(chunk);
+  });
+
+  req.on("end", () => {
+    content = Buffer.concat(content).toString();
+    console.log(content);
+  });
+
+  fs.readFile("./recipes.json", "utf8", (err, data) => {
+    if (err) {
+      res.write("Error has occured opening recipes file.");
+    }
+
+    try {
+      let cparsed = JSON.parse(content);
+      let parsed = JSON.parse(data);
+
+      for (let i in cparsed) {
+        parsed[i] = cparsed[i];
+      }
+
+      console.log(parsed);
+
+      fs.writeFile("recipes.json", JSON.stringify(parsed), (err) => {
+        if (err) console.log(err);
+        res.write("Saved successfully!");
+        res.end();
+      });
+    } catch (err) {
+      res.write("Error parsing input");
+      res.end();
+    }
+  });
 
   return 0;
 }
