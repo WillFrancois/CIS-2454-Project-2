@@ -68,8 +68,25 @@ async function addRecipe(req, res) {
         res.end();
       });
     } catch (err) {
-      res.write("Error parsing input");
-      res.end();
+      if (err instanceof SyntaxError) {
+        let cparsed = JSON.parse(content);
+        let parsed = {};
+        for (let i in cparsed) {
+          if (parsed[i] == undefined) {
+            parsed[i] = cparsed[i];
+            // This break only allows one recipe to be added.
+            break;
+          }
+        }
+        fs.writeFile("recipes.json", JSON.stringify(parsed), (error) => {
+          if (error) console.log(error);
+          res.write("Saved successfully!");
+          res.end();
+        });
+      } else {
+        res.write("Error parsing input");
+        res.end();
+      }
     }
   });
 }
